@@ -1,13 +1,15 @@
-![Amplience Dynamic Content Generative Rich Text Editor Extension](media/screenshot.png)
+![Amplience Dynamic Content Generative Rich Text Editor Extension](media/rte-extension-screenshot.jpg)
 
 # Generative Rich Text Editor
 
 > Generative Rich text field for use in [Amplience Dynamic Content](https://amplience.com/dynamic-content)
 
-This extension is designed to replace the built in rich text editor with additional features and customization options including generative content from [ChatGPT](https://openai.com/chatgpt).
+This extension is designed to replace the built in rich text editor with additional features and customization options including generative content from [Amplience Content Studio](#content-studio) and [ChatGPT](https://openai.com/chatgpt) 
 
 ## Features
+
 - AI
+  - [Content Studio](#content-studio)
   - [Generative AI assistant](#generative-ai-assistant)
 - Markdown output
   - Paragraphs
@@ -70,6 +72,7 @@ _As this is an open source project you're welcome to host your own "fork" of thi
 Sandbox permissions:
 
 - Allow same origin
+- Allow pop-ups
 
 ### Assign the extension to schema
 
@@ -161,15 +164,44 @@ This will output an array of "blocks". Each block has a type and associated data
 
 You can customize the rich text editor by providing "params" in your content type schema. The examples below should be added to the "params" object in your "ui:extension".
 
+### Content Studio
+
+[Content Studio](https://amplience.com/ai/studios/content-studio/) gives marketers and merchants the power to generate personalized product content that’s on-brand, every time.
+
+Use of Content Studio required you to have access to Content Studio and also Amplience Credits to generate content
+Amplience credits provide an easy way to start using our AI features. See [Amplience credits](https://amplience.com/developers/docs/ai-services/credits/)
+
+#### Disabling Content Studio
+
+If for any reason you wish to disable Content Studio from this extension you can do so by adding the following in your installation parameters:
+
+```json
+{
+  "tools": {
+    "contentStudio": {
+      "disabled": true
+    }
+  }
+}
+```
+
 ### Generative AI Assistant
 
 Powered by ChatGPT, the AI Assistant allows users to quickly generate and edit content using natural language prompts.
 
 ![Generate content from prompt](media/aiPrompt.png)
 
-To get started, you will need to provide your own OpenAI API key which will be used by the extension to communicate with the ChatGPT API. Note, ChatGPT is not affiliated with Amplience and therefore any impact to ChatGPT services such as updates, busy periods, or outages are outside of Amplience control.
+You can use the Generative AI Assistant with Amplience credits or your own OpenAI account.
 
 By using this feature, you are solely responsible for ensuring that AI generated content complies with internal company policies, applicable laws and [OpenAI's Terms](https://openai.com/policies).
+
+#### Using Amplience credits
+
+Amplience credits provide an easy way to start using our AI features without the need for your own OpenAI account. See [Amplience credits](https://amplience.com/developers/docs/ai-services/credits/)
+
+#### Using your own Open AI account
+
+To get started, you will need to provide your own OpenAI API key which will be used by the extension to communicate with the ChatGPT API. Note, ChatGPT is not affiliated with Amplience and therefore any impact to ChatGPT services such as updates, busy periods, or outages are outside of Amplience control.
 
 To create your key, you first need an OpenAI account which you can create [here](https://platform.openai.com/signup). Once you have an account you can create an API key [here](https://platform.openai.com/account/api-keys).
 
@@ -185,7 +217,33 @@ Once you have your API key, you can enable the AI Assistant feature by adding yo
 }
 ```
 
-#### ChatGPT 4
+For example:
+
+```json
+{
+  "properties": {
+    "text": {
+      "title": "Markdown text",
+      "description": "Markdown text",
+      "type": "string",
+      "minLength": 0,
+      "maxLength": 32000,
+      "ui:extension": {
+        "url": "https://rich-text.extensions.content.amplience.net",
+        "params": {
+          "tools": {
+            "ai": {
+              "key": "<OpenAI key>"
+            }
+          }
+        }
+      }
+    }
+  }
+}
+```
+
+#### Using ChatGPT 4
 
 If you have access to ChatGPT 4 or wish to use a different OpenAI model, you can choose the specific model the system should use as follows:
 
@@ -235,14 +293,71 @@ When text is selected, preset edit prompts are displayed which save users needin
 ```json
 {
   "toolbar": {
-    "layout": [
-      { "type": "button", "toolName": "ai" }
-    ]
+    "layout": [{ "type": "button", "toolName": "ai" }]
   }
 }
 ```
 
+#### Using Keywords for SEO
 
+The generative AI assistant can be configured to include SEO keywords in the generated text. Keywords should be defined in a separate field in the schema and the field should be referenced in the installation parameters of the extension using a [JSON pointer](https://datatracker.ietf.org/doc/html/rfc6901) in the `keywordSource` property:
+
+```json
+{
+  "keywords": {
+    "type": "string"
+  },
+  "content": {
+    "type": "string",
+    "ui:extension": {
+      "name": "rich-text",
+      "params": {
+        "keywordSource": "/keywords"
+      }
+    }
+  }
+}
+```
+
+### Disabling the Generative AI Assistant
+
+To Disable the Generative AI Assistant, add the following parameters:
+
+```json
+{
+  "tools": {
+    "ai": {
+      "disabled": true
+    }
+  }
+}
+```
+
+For example:
+
+```json
+{
+  "properties": {
+    "text": {
+      "title": "Markdown text",
+      "description": "Markdown text",
+      "type": "string",
+      "minLength": 0,
+      "maxLength": 32000,
+      "ui:extension": {
+        "url": "https://rich-text.extensions.content.amplience.net",
+        "params": {
+          "tools": {
+            "ai": {
+              "disabled": true
+            }
+          }
+        }
+      }
+    }
+  }
+}
+```
 
 ### Enable or disable tools
 
@@ -447,8 +562,6 @@ When using multiple of these properties, use them on the same object:
   ]
 }
 ```
-
-
 
 ### Experimental: Inline Styles
 
